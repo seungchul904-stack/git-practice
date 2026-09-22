@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>test_tools Preview</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h1>test_tools 목록</h1>
+    <p id="status">불러오는 중...</p>
+    <ul id="list"></ul>
+  </main>
+
+  <script>
+    const SUPABASE_URL = "https://mxrxxhndbdvhqfczfjlv.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_3IsJCYnWGp3QFIrcXxu1Lg_kYmofgN4";
+
+    async function loadTestTools() {
+      const statusEl = document.getElementById("status");
+      const listEl = document.getElementById("list");
+
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/test_tools?select=*`, {
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`
+          }
+        });
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
+        const rows = await res.json();
+
+        if (rows.length === 0) {
+          statusEl.textContent = "데이터가 없습니다.";
+          return;
+        }
+
+        statusEl.remove();
+
+        rows.forEach((row) => {
+          const li = document.createElement("li");
+          li.textContent = JSON.stringify(row);
+          listEl.appendChild(li);
+        });
+      } catch (err) {
+        statusEl.textContent = "데이터를 불러오지 못했습니다: " + err.message;
+      }
+    }
+
+    loadTestTools();
+  </script>
+</body>
+</html>
